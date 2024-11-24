@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedAgenda", "MedAgenda\MedAgenda.csproj", "{7FF80213-2F96-44E3-B5F6-18D42667E332}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7FF80213-2F96-44E3-B5F6-18D42667E332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FF80213-2F96-44E3-B5F6-18D42667E332}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FF80213-2F96-44E3-B5F6-18D42667E332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FF80213-2F96-44E3-B5F6-18D42667E332}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {731B9F4D-2AD4-4B5C-B277-FCFD4EA4C702}
+	EndGlobalSection
+EndGlobal

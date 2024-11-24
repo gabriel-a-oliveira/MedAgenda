@@ -1,0 +1,6 @@
+@MedAgenda_HostAddress = http://localhost:5122
+
+GET {{MedAgenda_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
