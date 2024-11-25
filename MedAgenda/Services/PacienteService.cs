@@ -36,7 +36,7 @@ namespace MedAgenda.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoverPaciente(int id)
+        public async Task RemoverPacienteAsync(int id)
         {
             var paciente = await _context.Pacientes.FindAsync(id);
             if (paciente != null)

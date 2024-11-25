@@ -30,30 +30,38 @@ namespace MedAgenda.Services
             return medico;
         }
 
-        public async Task AtualizarMedicoAsync(Medico medico)
+        public async Task<Medico> AtualizarMedicoAsync(int id, Medico medico)
         {
-            _context.Medicos.Update(medico);
-            //var medicoExistente = await _context.Medicos.FindAsync(medico.Id);
+            var medicoExistente = await _context.Medicos.FindAsync(id);
 
-            //if (medicoExistente != null)
-            //{
-                //medicoExistente.Nome = medico.Nome;
-                //medicoExistente.Especialidade = medico.Especialidade;
-                //medicoExistente.CRM = medico.CRM;
-                //medicoExistente.Telefone = medico.Telefone;
+            if (medicoExistente == null)
+            {
+                throw new KeyNotFoundException("Médico não encontrado.");
+            
+            }
+            medicoExistente.Nome = medico.Nome;
+            medicoExistente.Especialidade = medico.Especialidade;
+            medicoExistente.CRM = medico.CRM;
+            medicoExistente.Telefone = medico.Telefone;
 
-                await _context.SaveChangesAsync();
-            //}
+            await _context.SaveChangesAsync();
+
+            return medicoExistente;
         }
 
-        public async Task DeleteMedicoAsync(int id)
+        public async Task<Medico> RemoverMedicoAsync(int id)
         {
             var medico = await _context.Medicos.FindAsync(id);
-            if (medico != null)
+
+            if (medico == null)
             {
-                _context.Medicos.Remove(medico);
-                await _context.SaveChangesAsync();
+                throw new KeyNotFoundException("Médico não encontrado.");
             }
+
+            _context.Medicos.Remove(medico);
+            await _context.SaveChangesAsync();
+
+            return medico;
         }
     }
 }
