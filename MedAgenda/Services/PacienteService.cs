@@ -23,10 +23,11 @@ namespace MedAgenda.Services
             return await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task CriarPacienteAsync(Paciente paciente)
+        public async Task<Paciente> CriarPacienteAsync(Paciente paciente)
         {
             _context.Pacientes.Add(paciente);
             await _context.SaveChangesAsync();
+            return paciente;
         }
 
         public async Task AtualizarPacienteAsync(Paciente paciente)
