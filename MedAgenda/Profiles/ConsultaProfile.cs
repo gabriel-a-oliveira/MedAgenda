@@ -9,6 +9,7 @@ public class ConsultaProfile : Profile
     public ConsultaProfile()
     {
         CreateMap<Consulta, ConsultaResponseDto>();
+        CreateMap<ConsultaRequestDto, Consulta>();
         CreateMap<Medico, MedicoResponseDto>();
         CreateMap<Paciente, PacienteResponseDto>();
     }
