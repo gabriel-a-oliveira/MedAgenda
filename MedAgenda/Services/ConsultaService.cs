@@ -26,10 +26,39 @@ public class ConsultaService
         return await _context.Consultas.Include(c => c.Medico).Include(c => c.Paciente).FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task CriarConsultaAsync(Consulta consulta)
+    public async Task<ConsultaResponseDto> CriarConsultaAsync(ConsultaRequestDto consultaRequestDTO)
     {
+        var medicoExistente = await _context.Medicos.FindAsync(consultaRequestDTO.MedicoId);
+        var pacienteExistente = await _context.Pacientes.FindAsync(consultaRequestDTO.PacienteId);
+
+        if (medicoExistente == null || pacienteExistente == null)
+        {
+            throw new Exception("Médico ou paciente não encontrado.");
+        }
+
+        var consulta = new Consulta
+        {
+            MedicoId = consultaRequestDTO.MedicoId,
+            PacienteId = consultaRequestDTO.PacienteId,
+            DataHora = consultaRequestDTO.DataHora,
+            Status = consultaRequestDTO.Status
+        };
+
         _context.Consultas.Add(consulta);
         await _context.SaveChangesAsync();
+
+        var consultaResponseDTO = new ConsultaResponseDto
+        {
+            Id = consulta.Id,
+            MedicoId = consulta.MedicoId,
+            MedicoNome = medicoExistente.Nome, 
+            PacienteId = consulta.PacienteId,
+            PacienteNome = pacienteExistente.Nome, 
+            DataHora = consulta.DataHora,
+            Status = consulta.Status
+        };
+
+        return consultaResponseDTO;
     }
 
     public async Task AtualizarConsultaAsync(Consulta consulta)

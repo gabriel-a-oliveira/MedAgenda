@@ -35,15 +35,17 @@ public class ConsultasController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CriarConsulta([FromBody] Consulta consulta)
+    public async Task<IActionResult> CriarConsulta([FromBody] ConsultaRequestDto consultaRequestDto)
     {
-        if (consulta == null)
+        try
         {
-            return BadRequest("Os dados da consulta não foram fornecidos.");
+            var consultaResponseDto = await _consultaService.CriarConsultaAsync(consultaRequestDto);
+            return Ok(consultaResponseDto);
         }
-
-        await _consultaService.CriarConsultaAsync(consulta);
-        return CreatedAtAction(nameof(ObterPorId), new { id = consulta.Id }, consulta);
+        catch (Exception ex)
+        {
+            return BadRequest($"Erro ao criar consulta: {ex.Message}");
+        }
     }
 
     [HttpPut("{id}")]
