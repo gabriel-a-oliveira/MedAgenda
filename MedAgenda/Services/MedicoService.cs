@@ -1,67 +1,82 @@
-﻿using MedAgenda.Data;
+﻿using AutoMapper;
+using MedAgenda.Data;
+using MedAgenda.DTOs;
 using MedAgenda.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MedAgenda.Services
+namespace MedAgenda.Services;
+
+public class MedicoService
 {
-    public class MedicoService
+    private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
+
+    public MedicoService(ApplicationDbContext context, IMapper mapper)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+        _mapper = mapper;
+    }
 
-        public MedicoService(ApplicationDbContext context)
+    public async Task<IEnumerable<MedicoResponseDto>> ObterTodasAsync()
+    {
+        var medicos = await _context.Medicos.ToListAsync();
+        return _mapper.Map<IEnumerable<MedicoResponseDto>>(medicos);
+    }
+
+    public async Task<MedicoResponseDto?> ObterPorIdAsync(int id)
+    {
+        var medico = await _context.Medicos.FirstOrDefaultAsync(p => p.Id == id);
+        if (medico == null)
         {
-            _context = context;
+            throw new KeyNotFoundException("Médico não encontrado.");
+        }
+        return _mapper.Map<MedicoResponseDto>(medico);
+    }
+
+    public async Task<MedicoResponseDto> CriarMedicoAsync(MedicoRequestDto medicoRequestDto)
+    {
+        var medico = _mapper.Map<Medico>(medicoRequestDto);
+
+        _context.Medicos.Add(medico);
+        await _context.SaveChangesAsync();
+
+        var medicoDto = _mapper.Map<MedicoResponseDto>(medico);
+
+        return medicoDto;
+    }
+
+    public async Task<MedicoResponseDto> AtualizarMedicoAsync(int id, MedicoRequestDto medicoRequestDto)
+    {
+        var medicoExistente = await _context.Medicos.FindAsync(id);
+
+        if (medicoExistente == null)
+        {
+            throw new KeyNotFoundException("Médico não encontrado.");
         }
 
-        public async Task<IEnumerable<Medico>> ObterTodasAsync()
+        _mapper.Map(medicoRequestDto, medicoExistente);
+
+        await _context.SaveChangesAsync();
+
+        var medicoDto = _mapper.Map<MedicoResponseDto>(medicoExistente);
+
+        return medicoDto;
+    }
+
+    public async Task<MedicoResponseDto> RemoverMedicoAsync(int id)
+    {
+        var medico = await _context.Medicos.FindAsync(id);
+
+        if (medico == null)
         {
-            return await _context.Medicos.ToListAsync();
+            throw new KeyNotFoundException("Médico não encontrado.");
         }
 
-        public async Task<Medico?> ObterPorIdAsync(int id)
-        {
-            return await _context.Medicos.FirstOrDefaultAsync(p => p.Id == id);
-        }
+        _context.Medicos.Remove(medico);
+        await _context.SaveChangesAsync();
 
-        public async Task<Medico> CriarMedicoAsync(Medico medico)
-        {
-            _context.Medicos.Add(medico);
-            await _context.SaveChangesAsync();
-            return medico;
-        }
+        var medicoDto = _mapper.Map<MedicoResponseDto>(medico);
 
-        public async Task<Medico> AtualizarMedicoAsync(int id, Medico medico)
-        {
-            var medicoExistente = await _context.Medicos.FindAsync(id);
-
-            if (medicoExistente == null)
-            {
-                throw new KeyNotFoundException("Médico não encontrado.");
-            
-            }
-            medicoExistente.Nome = medico.Nome;
-            medicoExistente.Especialidade = medico.Especialidade;
-            medicoExistente.CRM = medico.CRM;
-            medicoExistente.Telefone = medico.Telefone;
-
-            await _context.SaveChangesAsync();
-
-            return medicoExistente;
-        }
-
-        public async Task<Medico> RemoverMedicoAsync(int id)
-        {
-            var medico = await _context.Medicos.FindAsync(id);
-
-            if (medico == null)
-            {
-                throw new KeyNotFoundException("Médico não encontrado.");
-            }
-
-            _context.Medicos.Remove(medico);
-            await _context.SaveChangesAsync();
-
-            return medico;
-        }
+        return medicoDto;
     }
 }

@@ -1,4 +1,5 @@
-﻿using MedAgenda.Models;
+﻿using MedAgenda.DTOs;
+using MedAgenda.Models;
 using MedAgenda.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,18 +33,15 @@ public class MedicosController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CriarMedico(Medico medico)
+    public async Task<IActionResult> CriarMedico(MedicoRequestDto medico)
     {
         var newMedico = await _context.CriarMedicoAsync(medico);
         return CreatedAtAction(nameof(ObterPorId), new { id = newMedico.Id }, newMedico);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> AtualizarMedico(int id, Medico medico)
+    public async Task<IActionResult> AtualizarMedico(int id, MedicoRequestDto medico)
     {
-        if (id != medico.Id)
-            return BadRequest("ID do médico na URL não corresponde ao ID no corpo da requisição.");
-
         try
         {
             var medicoAtualizado = await _context.AtualizarMedicoAsync(id, medico);
