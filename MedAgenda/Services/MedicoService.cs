@@ -63,7 +63,7 @@ public class MedicoService
         return medicoResponseDto;
     }
 
-    public async Task<MedicoResponseDto> RemoverMedicoAsync(int id)
+    public async Task RemoverMedicoAsync(int id)
     {
         var medico = await _context.Medicos.FindAsync(id);
 
@@ -74,9 +74,5 @@ public class MedicoService
 
         _context.Medicos.Remove(medico);
         await _context.SaveChangesAsync();
-
-        var medicoResponseDto = _mapper.Map<MedicoResponseDto>(medico);
-
-        return medicoResponseDto;
     }
 }

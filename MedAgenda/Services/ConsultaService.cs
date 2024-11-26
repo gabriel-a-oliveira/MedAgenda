@@ -1,4 +1,5 @@
-﻿using MedAgenda.Data;
+﻿using AutoMapper;
+using MedAgenda.Data;
 using MedAgenda.DTOs;
 using MedAgenda.Models;
 using Microsoft.EntityFrameworkCore;
@@ -8,73 +9,86 @@ namespace MedAgenda.Services;
 public class ConsultaService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
 
-    public ConsultaService(ApplicationDbContext context)
+    public ConsultaService(ApplicationDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Consulta>> ObterTodasAsync()
+    public async Task<IEnumerable<ConsultaResponseDto>> ObterTodasAsync()
     {
-        return await _context.Consultas
+        var consultas = await _context.Consultas
+               .Include(c => c.Medico) 
+               .Include(c => c.Paciente) 
+               .ToListAsync();
+
+        return _mapper.Map<IEnumerable<ConsultaResponseDto>>(consultas);
+    }
+
+    public async Task<ConsultaResponseDto?> ObterPorIdAsync(int id)
+    {
+        var consulta = await _context.Consultas
             .Include(c => c.Medico)
             .Include(c => c.Paciente)
-            .ToListAsync();
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (consulta == null)
+        {
+            throw new KeyNotFoundException("Consulta não encontrada.");
+        }
+
+        return _mapper.Map<ConsultaResponseDto>(consulta);
     }
 
-    public async Task<Consulta?> ObterPorIdAsync(int id)
+    public async Task<ConsultaResponseDto> CriarConsultaAsync(ConsultaRequestDto consultaRequestDto)
     {
-        return await _context.Consultas.Include(c => c.Medico).Include(c => c.Paciente).FirstOrDefaultAsync(c => c.Id == id);
-    }
-
-    public async Task<ConsultaResponseDto> CriarConsultaAsync(ConsultaRequestDto consultaRequestDTO)
-    {
-        var medicoExistente = await _context.Medicos.FindAsync(consultaRequestDTO.MedicoId);
-        var pacienteExistente = await _context.Pacientes.FindAsync(consultaRequestDTO.PacienteId);
+        var medicoExistente = await _context.Medicos.FindAsync(consultaRequestDto.MedicoId);
+        var pacienteExistente = await _context.Pacientes.FindAsync(consultaRequestDto.PacienteId);
 
         if (medicoExistente == null || pacienteExistente == null)
         {
             throw new Exception("Médico ou paciente não encontrado.");
         }
 
-        var consulta = new Consulta
-        {
-            MedicoId = consultaRequestDTO.MedicoId,
-            PacienteId = consultaRequestDTO.PacienteId,
-            DataHora = consultaRequestDTO.DataHora,
-            Status = consultaRequestDTO.Status
-        };
+        var consulta = _mapper.Map<Consulta>(consultaRequestDto);
 
         _context.Consultas.Add(consulta);
         await _context.SaveChangesAsync();
 
-        var consultaResponseDTO = new ConsultaResponseDto
-        {
-            Id = consulta.Id,
-            MedicoId = consulta.MedicoId,
-            MedicoNome = medicoExistente.Nome, 
-            PacienteId = consulta.PacienteId,
-            PacienteNome = pacienteExistente.Nome, 
-            DataHora = consulta.DataHora,
-            Status = consulta.Status
-        };
-
-        return consultaResponseDTO;
+        var consultaResponseDto = _mapper.Map<ConsultaResponseDto>(consulta);
+        return consultaResponseDto;
     }
 
-    public async Task AtualizarConsultaAsync(Consulta consulta)
+    public async Task<ConsultaResponseDto> AtualizarConsultaAsync(int id, ConsultaRequestDto consultaRequestDto)
     {
-        _context.Consultas.Update(consulta);
+        var consultaExistente = await _context.Consultas.FindAsync(id);
+
+        if (consultaExistente == null)
+        {
+            throw new KeyNotFoundException("Consulta não encontrada.");
+        }
+
+        _mapper.Map(consultaRequestDto, consultaExistente);
+
         await _context.SaveChangesAsync();
+
+        var consultaResponseDto = _mapper.Map<ConsultaResponseDto>(consultaExistente);
+        return consultaResponseDto;
+
     }
 
     public async Task RemoverConsultaAsync(int id)
     {
         var consulta = await _context.Consultas.FindAsync(id);
-        if (consulta != null)
+        
+        if (consulta == null)
         {
-            _context.Consultas.Remove(consulta);
-            await _context.SaveChangesAsync();
+            throw new KeyNotFoundException("Consulta não encontradoa");
         }
+
+        _context.Consultas.Remove(consulta);
+        await _context.SaveChangesAsync();
     }
 }

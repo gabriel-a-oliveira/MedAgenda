@@ -50,16 +50,11 @@ public class ConsultasController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> AtualizarConsulta(int id, [FromBody] Consulta consulta)
+    public async Task<IActionResult> AtualizarConsulta(int id, [FromBody] ConsultaRequestDto consultaRequestDto)
     {
-        if (id != consulta.Id)
-        {
-            return BadRequest("ID da consulta na URL não corresponde ao ID no corpo da requisição.");
-        }
-
         try
         {
-            await _consultaService.AtualizarConsultaAsync(consulta);
+            await _consultaService.AtualizarConsultaAsync(id, consultaRequestDto);
             return NoContent();
         }
         catch (KeyNotFoundException)

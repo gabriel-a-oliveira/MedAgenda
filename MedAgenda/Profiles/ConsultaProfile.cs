@@ -8,7 +8,8 @@ public class ConsultaProfile : Profile
 {
     public ConsultaProfile()
     {
-        CreateMap<ConsultaRequestDto, Consulta>();
         CreateMap<Consulta, ConsultaResponseDto>();
+        CreateMap<Medico, MedicoResponseDto>();
+        CreateMap<Paciente, PacienteResponseDto>();
     }
 }
