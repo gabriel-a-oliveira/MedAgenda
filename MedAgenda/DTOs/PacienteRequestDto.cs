@@ -12,7 +12,6 @@ public class PacienteRequestDto
     public DateTime DataNascimento { get; set; }
 
     [Required(ErrorMessage = "O CPF é obrigatório.")]
-    [RegularExpression(@"^\d{11}$", ErrorMessage = "O CPF deve conter exatamente 11 dígitos numéricos.")]
     public string? CPF { get; set; }
 
     [Required(ErrorMessage = "O endereço é obrigatório.")]
