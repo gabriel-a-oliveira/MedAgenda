@@ -1,49 +1,79 @@
-﻿using MedAgenda.Data;
+﻿using AutoMapper;
+using MedAgenda.Data;
+using MedAgenda.DTOs;
 using MedAgenda.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MedAgenda.Services
+namespace MedAgenda.Services;
+
+public class PacienteService
 {
-    public class PacienteService
+    private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
+
+
+    public PacienteService(ApplicationDbContext context, IMapper mapper)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+        _mapper = mapper;
+    }
 
-        public PacienteService(ApplicationDbContext context)
+    public async Task<IEnumerable<PacienteResponseDto>> ObterTodasAsync()
+    {
+        var pacientes = await _context.Pacientes.ToListAsync();
+        return _mapper.Map<IEnumerable<PacienteResponseDto>>(pacientes);
+    }
+
+    public async Task<PacienteResponseDto?> ObterPorIdAsync(int id)
+    {
+        var paciente = await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == id);
+        if (paciente == null)
         {
-            _context = context;
+            throw new KeyNotFoundException("Paciente não encontrado.");
         }
 
-        public async Task<IEnumerable<Paciente>> ObterTodasAsync()
+        return _mapper.Map<PacienteResponseDto>(paciente);
+    }
+
+    public async Task<PacienteResponseDto> CriarPacienteAsync(PacienteRequestDto pacienteRequest)
+    {
+        var paciente = _mapper.Map<Paciente>(pacienteRequest); 
+
+        _context.Pacientes.Add(paciente);
+        await _context.SaveChangesAsync();
+
+        var pacienteResponseDto = _mapper.Map<PacienteResponseDto>(paciente);
+        return pacienteResponseDto;
+    }
+
+    public async Task<PacienteResponseDto> AtualizarPacienteAsync(int id, PacienteRequestDto pacienteRequestDto)
+    {
+        var pacienteExistente = await _context.Pacientes.FindAsync(id);
+
+        if (pacienteExistente == null)
         {
-            return await _context.Pacientes.ToListAsync();
+            throw new KeyNotFoundException("Paciente não encontrado.");
         }
 
-        public async Task<Paciente?> ObterPorIdAsync(int id)
-        {
-            return await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == id);
-        }
+        _mapper.Map(pacienteRequestDto, pacienteExistente);
+        await _context.SaveChangesAsync();
 
-        public async Task<Paciente> CriarPacienteAsync(Paciente paciente)
-        {
-            _context.Pacientes.Add(paciente);
-            await _context.SaveChangesAsync();
-            return paciente;
-        }
+        var pacienteResponseDto = _mapper.Map<PacienteResponseDto>(pacienteExistente);
 
-        public async Task AtualizarPacienteAsync(Paciente paciente)
-        {
-            _context.Pacientes.Update(paciente);
-            await _context.SaveChangesAsync();
-        }
+        return pacienteResponseDto;
+    }
 
-        public async Task RemoverPacienteAsync(int id)
+    public async Task<PacienteResponseDto> RemoverPacienteAsync(int id)
+    {
+        var paciente = await _context.Pacientes.FindAsync(id);
+        if (paciente == null)
         {
-            var paciente = await _context.Pacientes.FindAsync(id);
-            if (paciente != null)
-            {
-                _context.Remove(paciente);
-                await _context.SaveChangesAsync();
-            }
+            throw new KeyNotFoundException("Médico não encontrado.");
         }
+        _context.Remove(paciente);
+        await _context.SaveChangesAsync();
+
+        var pacienteResponseDto = _mapper.Map<PacienteResponseDto>(paciente);
+        return pacienteResponseDto;
     }
 }

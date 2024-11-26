@@ -1,4 +1,5 @@
-﻿using MedAgenda.Models;
+﻿using MedAgenda.DTOs;
+using MedAgenda.Models;
 using MedAgenda.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,28 +36,18 @@ public class PacientesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CriarPaciente([FromBody] Paciente paciente)
+    public async Task<IActionResult> CriarPaciente([FromBody] PacienteRequestDto pacienteRequestDto)
     {
-        if (paciente == null)
-        {
-            return BadRequest("Os dados do paciente não foram fornecidos.");
-        }
-
-        var novoPaciente = await _pacienteService.CriarPacienteAsync(paciente);
+        var novoPaciente = await _pacienteService.CriarPacienteAsync(pacienteRequestDto);
         return CreatedAtAction(nameof(ObterPorId), new { id = novoPaciente.Id }, novoPaciente);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> AtualizarPaciente(int id, [FromBody] Paciente paciente)
+    public async Task<IActionResult> AtualizarPaciente(int id, [FromBody] PacienteRequestDto pacienteRequestDto)
     {
-        if (id != paciente.Id)
-        {
-            return BadRequest("ID do paciente na URL não corresponde ao ID no corpo da requisição.");
-        }
-
         try
         {
-            await _pacienteService.AtualizarPacienteAsync(paciente);
+            await _pacienteService.AtualizarPacienteAsync(id, pacienteRequestDto);
             return NoContent(); 
         }
         catch (KeyNotFoundException)

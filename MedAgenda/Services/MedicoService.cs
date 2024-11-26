@@ -40,9 +40,9 @@ public class MedicoService
         _context.Medicos.Add(medico);
         await _context.SaveChangesAsync();
 
-        var medicoDto = _mapper.Map<MedicoResponseDto>(medico);
+        var medicoResponseDto = _mapper.Map<MedicoResponseDto>(medico);
 
-        return medicoDto;
+        return medicoResponseDto;
     }
 
     public async Task<MedicoResponseDto> AtualizarMedicoAsync(int id, MedicoRequestDto medicoRequestDto)
@@ -58,9 +58,9 @@ public class MedicoService
 
         await _context.SaveChangesAsync();
 
-        var medicoDto = _mapper.Map<MedicoResponseDto>(medicoExistente);
+        var medicoResponseDto = _mapper.Map<MedicoResponseDto>(medicoExistente);
 
-        return medicoDto;
+        return medicoResponseDto;
     }
 
     public async Task<MedicoResponseDto> RemoverMedicoAsync(int id)
@@ -75,8 +75,8 @@ public class MedicoService
         _context.Medicos.Remove(medico);
         await _context.SaveChangesAsync();
 
-        var medicoDto = _mapper.Map<MedicoResponseDto>(medico);
+        var medicoResponseDto = _mapper.Map<MedicoResponseDto>(medico);
 
-        return medicoDto;
+        return medicoResponseDto;
     }
 }
