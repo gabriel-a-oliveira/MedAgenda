@@ -53,8 +53,8 @@ public class ConsultasController : ControllerBase
     {
         try
         {
-            await _consultaService.AtualizarConsultaAsync(id, consultaRequestDto);
-            return NoContent();
+            var consultaAtualizada = await _consultaService.AtualizarConsultaAsync(id, consultaRequestDto);
+            return Ok(consultaAtualizada);
         }
         catch (KeyNotFoundException)
         {
