@@ -1,4 +1,3 @@
-using MedAgenda.Controllers;
 using MedAgenda.Data;
 using MedAgenda.Services;
 using Microsoft.EntityFrameworkCore;

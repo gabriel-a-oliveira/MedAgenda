@@ -1,4 +1,5 @@
 ﻿using MedAgenda.Data;
+using MedAgenda.DTOs;
 using MedAgenda.Models;
 using Microsoft.EntityFrameworkCore;
 
