@@ -62,8 +62,8 @@ public class MedicosController : ControllerBase
     {
         try
         {
-            var medicoRemovido = await _context.RemoverMedicoAsync(id);
-            return Ok(medicoRemovido);
+            await _context.RemoverMedicoAsync(id);
+            return NoContent();
         }
         catch (KeyNotFoundException ex)
         {
