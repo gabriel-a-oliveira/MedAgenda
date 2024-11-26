@@ -1,4 +1,5 @@
-﻿using MedAgenda.Models;
+﻿using MedAgenda.DTOs;
+using MedAgenda.Models;
 using MedAgenda.Services;
 using Microsoft.AspNetCore.Mvc;
 
