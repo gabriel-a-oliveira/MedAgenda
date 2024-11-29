@@ -12,6 +12,7 @@ public class PacienteRequestDto
     public DateTime DataNascimento { get; set; }
 
     [Required(ErrorMessage = "O CPF é obrigatório.")]
+    [StringLength(11, MinimumLength = 11, ErrorMessage = "O CPF deve ter exatamente 11 caracteres, sem pontos e hífen.")]
     public string? CPF { get; set; }
 
     [Required(ErrorMessage = "O endereço é obrigatório.")]
