@@ -6,16 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MedAgenda.Services;
 
-public class MedicoService
+public class MedicoService(ApplicationDbContext context, IMapper mapper)
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-    public MedicoService(ApplicationDbContext context, IMapper mapper)
-    {
-        _context = context;
-        _mapper = mapper;
-    }
+    private readonly ApplicationDbContext _context = context;
+    private readonly IMapper _mapper = mapper;
 
     public async Task<IEnumerable<MedicoResponseDto>> ObterTodasAsync()
     {

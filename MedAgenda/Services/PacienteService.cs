@@ -6,17 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MedAgenda.Services;
 
-public class PacienteService
+public class PacienteService(ApplicationDbContext context, IMapper mapper)
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-
-    public PacienteService(ApplicationDbContext context, IMapper mapper)
-    {
-        _context = context;
-        _mapper = mapper;
-    }
+    private readonly ApplicationDbContext _context = context;
+    private readonly IMapper _mapper = mapper;
 
     public async Task<IEnumerable<PacienteResponseDto>> ObterTodasAsync()
     {
@@ -28,12 +21,7 @@ public class PacienteService
     {
         var paciente = await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == id);
 
-        if (paciente is null)
-        {
-            throw new KeyNotFoundException("Paciente não encontrado.");
-        }
-
-        return _mapper.Map<PacienteResponseDto>(paciente);
+        return paciente is null ? throw new KeyNotFoundException("Paciente não encontrado.") : _mapper.Map<PacienteResponseDto>(paciente);
     }
 
     public async Task<PacienteResponseDto> CriarPacienteAsync(PacienteRequestDto pacienteRequest)
@@ -49,13 +37,7 @@ public class PacienteService
 
     public async Task<PacienteResponseDto> AtualizarPacienteAsync(int id, PacienteRequestDto pacienteRequestDto)
     {
-        var pacienteExistente = await _context.Pacientes.FindAsync(id);
-
-        if (pacienteExistente is null)
-        {
-            throw new KeyNotFoundException("Paciente não encontrado.");
-        }
-
+        var pacienteExistente = await _context.Pacientes.FindAsync(id) ?? throw new KeyNotFoundException("Paciente não encontrado.");
         _mapper.Map(pacienteRequestDto, pacienteExistente);
         await _context.SaveChangesAsync();
 
@@ -66,13 +48,7 @@ public class PacienteService
 
     public async Task<PacienteResponseDto> RemoverPacienteAsync(int id)
     {
-        var paciente = await _context.Pacientes.FindAsync(id);
-        
-        if (paciente is null)
-        {
-            throw new KeyNotFoundException("Médico não encontrado.");
-        }
-
+        var paciente = await _context.Pacientes.FindAsync(id) ?? throw new KeyNotFoundException("Médico não encontrado.");
         _context.Remove(paciente);
         await _context.SaveChangesAsync();
 
