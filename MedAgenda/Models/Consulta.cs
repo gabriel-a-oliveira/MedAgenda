@@ -18,7 +18,6 @@ public class Consulta
     public DateTime DataHora { get; set; } 
 
     [Required]
-    [RegularExpression("^(pendente|realizada|cancelada)$", ErrorMessage = "Status inválido")]
     public string? Status { get; set; }  
 
     public Medico? Medico { get; set; }
