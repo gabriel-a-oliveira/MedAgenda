@@ -27,8 +27,6 @@ public class MedicosController : ControllerBase
     public async Task<IActionResult> ObterPorId(int id)
     {
         var medico = await _context.ObterPorIdAsync(id);
-        if (medico == null) return NotFound();
-
         return Ok(medico);
     }
 
@@ -42,36 +40,14 @@ public class MedicosController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> AtualizarMedico(int id, MedicoRequestDto medico)
     {
-        try
-        {
-            var medicoAtualizado = await _context.AtualizarMedicoAsync(id, medico);
-            return Ok(medicoAtualizado);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Erro interno: {ex.Message}");
-        }
+        var medicoAtualizado = await _context.AtualizarMedicoAsync(id, medico);
+        return Ok(medicoAtualizado);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> RemoverMedico(int id)
     {
-        try
-        {
-            await _context.RemoverMedicoAsync(id);
-            return NoContent();
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Erro interno: {ex.Message}");
-        }
+        await _context.RemoverMedicoAsync(id);
+        return NoContent();
     }
 }

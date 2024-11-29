@@ -1,5 +1,4 @@
 ﻿using MedAgenda.DTOs;
-using MedAgenda.Models;
 using MedAgenda.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,11 +26,6 @@ public class PacientesController : ControllerBase
     public async Task<IActionResult> ObterPorId(int id)
     {
         var paciente = await _pacienteService.ObterPorIdAsync(id);
-        if (paciente == null)
-        {
-            return NotFound();
-        }
-
         return Ok(paciente);
     }
 
@@ -45,36 +39,14 @@ public class PacientesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> AtualizarPaciente(int id, [FromBody] PacienteRequestDto pacienteRequestDto)
     {
-        try
-        {
-            await _pacienteService.AtualizarPacienteAsync(id, pacienteRequestDto);
-            return NoContent(); 
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Paciente não encontrado.");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Erro interno: {ex.Message}");
-        }
+        await _pacienteService.AtualizarPacienteAsync(id, pacienteRequestDto);
+        return NoContent(); 
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> RemoverPaciente(int id)
     {
-        try
-        {
-            await _pacienteService.RemoverPacienteAsync(id);
-            return NoContent(); 
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Paciente não encontrado.");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Erro interno: {ex.Message}");
-        }
+        await _pacienteService.RemoverPacienteAsync(id);
+        return NoContent(); 
     }
 }

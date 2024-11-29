@@ -1,4 +1,5 @@
 using MedAgenda.Data;
+using MedAgenda.ExceptionMiddleware;
 using MedAgenda.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +25,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

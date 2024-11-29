@@ -26,61 +26,27 @@ public class ConsultasController : ControllerBase
     public async Task<IActionResult> ObterPorId(int id)
     {
         var consulta = await _consultaService.ObterPorIdAsync(id);
-        if (consulta == null)
-        {
-            return NotFound();
-        }
-
         return Ok(consulta);
     }
 
     [HttpPost]
     public async Task<IActionResult> CriarConsulta([FromBody] ConsultaRequestDto consultaRequestDto)
     {
-        try
-        {
-            var consultaResponseDto = await _consultaService.CriarConsultaAsync(consultaRequestDto);
-            return Ok(consultaResponseDto);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Erro ao criar consulta: {ex.Message}");
-        }
+        var consultaResponseDto = await _consultaService.CriarConsultaAsync(consultaRequestDto);
+        return Ok(consultaResponseDto);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> AtualizarConsulta(int id, [FromBody] ConsultaRequestDto consultaRequestDto)
     {
-        try
-        {
-            var consultaAtualizada = await _consultaService.AtualizarConsultaAsync(id, consultaRequestDto);
-            return Ok(consultaAtualizada);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Consulta não encontrada.");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Erro interno: {ex.Message}");
-        }
+        var consultaAtualizada = await _consultaService.AtualizarConsultaAsync(id, consultaRequestDto);
+        return Ok(consultaAtualizada);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> RemoverConsulta(int id)
     {
-        try
-        {
-            await _consultaService.RemoverConsultaAsync(id);
-            return NoContent();
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound("Consulta não encontrada.");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Erro interno: {ex.Message}");
-        }
+        await _consultaService.RemoverConsultaAsync(id);
+        return NoContent();
     }
 }
