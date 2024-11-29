@@ -19,18 +19,15 @@ public class MedicoService
 
     public async Task<IEnumerable<MedicoResponseDto>> ObterTodasAsync()
     {
-        var medicos = await _context.Medicos.ToListAsync();
+        var medicos = await _context.Medicos.Order().ToListAsync();
         return _mapper.Map<IEnumerable<MedicoResponseDto>>(medicos);
     }
 
     public async Task<MedicoResponseDto?> ObterPorIdAsync(int id)
     {
         var medico = await _context.Medicos.FirstOrDefaultAsync(p => p.Id == id);
-        if (medico == null)
-        {
-            throw new KeyNotFoundException("Médico não encontrado.");
-        }
-        return _mapper.Map<MedicoResponseDto>(medico);
+
+        return medico is null ? throw new KeyNotFoundException("Médico não encontrado.") : _mapper.Map<MedicoResponseDto>(medico);
     }
 
     public async Task<MedicoResponseDto> CriarMedicoAsync(MedicoRequestDto medicoRequestDto)
@@ -47,13 +44,7 @@ public class MedicoService
 
     public async Task<MedicoResponseDto> AtualizarMedicoAsync(int id, MedicoRequestDto medicoRequestDto)
     {
-        var medicoExistente = await _context.Medicos.FindAsync(id);
-
-        if (medicoExistente == null)
-        {
-            throw new KeyNotFoundException("Médico não encontrado.");
-        }
-
+        var medicoExistente = await _context.Medicos.FindAsync(id) ?? throw new KeyNotFoundException("Médico não encontrado.");
         _mapper.Map(medicoRequestDto, medicoExistente);
 
         await _context.SaveChangesAsync();
@@ -65,13 +56,7 @@ public class MedicoService
 
     public async Task RemoverMedicoAsync(int id)
     {
-        var medico = await _context.Medicos.FindAsync(id);
-
-        if (medico == null)
-        {
-            throw new KeyNotFoundException("Médico não encontrado.");
-        }
-
+        var medico = await _context.Medicos.FindAsync(id) ?? throw new KeyNotFoundException("Médico não encontrado.");
         _context.Medicos.Remove(medico);
         await _context.SaveChangesAsync();
     }

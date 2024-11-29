@@ -34,12 +34,7 @@ public class ConsultaService
             .Include(c => c.Paciente)
             .FirstOrDefaultAsync(c => c.Id == id);
 
-        if (consulta == null)
-        {
-            throw new KeyNotFoundException("Consulta não encontrada.");
-        }
-
-        return _mapper.Map<ConsultaResponseDto>(consulta);
+        return consulta is null ? throw new KeyNotFoundException("Consulta não encontrada.") : _mapper.Map<ConsultaResponseDto>(consulta);
     }
 
     public async Task<ConsultaResponseDto> CriarConsultaAsync(ConsultaRequestDto consultaRequestDto)
@@ -47,9 +42,9 @@ public class ConsultaService
         var medicoExistente = await _context.Medicos.FindAsync(consultaRequestDto.MedicoId);
         var pacienteExistente = await _context.Pacientes.FindAsync(consultaRequestDto.PacienteId);
 
-        if (medicoExistente == null || pacienteExistente == null)
+        if (medicoExistente is null || pacienteExistente is null)
         {
-            throw new Exception("Médico ou paciente não encontrado.");
+            throw new KeyNotFoundException("Médico ou paciente não encontrado.");
         }
 
         var consulta = _mapper.Map<Consulta>(consultaRequestDto);
@@ -63,13 +58,7 @@ public class ConsultaService
 
     public async Task<ConsultaResponseDto> AtualizarConsultaAsync(int id, ConsultaRequestDto consultaRequestDto)
     {
-        var consultaExistente = await _context.Consultas.FindAsync(id);
-
-        if (consultaExistente == null)
-        {
-            throw new KeyNotFoundException("Consulta não encontrada.");
-        }
-
+        var consultaExistente = await _context.Consultas.FindAsync(id) ?? throw new KeyNotFoundException("Consulta não encontrada.");
         _mapper.Map(consultaRequestDto, consultaExistente);
 
         await _context.SaveChangesAsync();
@@ -81,13 +70,7 @@ public class ConsultaService
 
     public async Task RemoverConsultaAsync(int id)
     {
-        var consulta = await _context.Consultas.FindAsync(id);
-        
-        if (consulta == null)
-        {
-            throw new KeyNotFoundException("Consulta não encontradoa");
-        }
-
+        var consulta = await _context.Consultas.FindAsync(id) ?? throw new KeyNotFoundException("Consulta não encontradoa");
         _context.Consultas.Remove(consulta);
         await _context.SaveChangesAsync();
     }

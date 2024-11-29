@@ -27,7 +27,8 @@ public class PacienteService
     public async Task<PacienteResponseDto?> ObterPorIdAsync(int id)
     {
         var paciente = await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == id);
-        if (paciente == null)
+
+        if (paciente is null)
         {
             throw new KeyNotFoundException("Paciente não encontrado.");
         }
@@ -50,7 +51,7 @@ public class PacienteService
     {
         var pacienteExistente = await _context.Pacientes.FindAsync(id);
 
-        if (pacienteExistente == null)
+        if (pacienteExistente is null)
         {
             throw new KeyNotFoundException("Paciente não encontrado.");
         }
@@ -66,10 +67,12 @@ public class PacienteService
     public async Task<PacienteResponseDto> RemoverPacienteAsync(int id)
     {
         var paciente = await _context.Pacientes.FindAsync(id);
-        if (paciente == null)
+        
+        if (paciente is null)
         {
             throw new KeyNotFoundException("Médico não encontrado.");
         }
+
         _context.Remove(paciente);
         await _context.SaveChangesAsync();
 
