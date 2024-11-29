@@ -13,7 +13,10 @@ public class MedicoService(ApplicationDbContext context, IMapper mapper)
 
     public async Task<IEnumerable<MedicoResponseDto>> ObterTodasAsync()
     {
-        var medicos = await _context.Medicos.Order().ToListAsync();
+        var medicos = await _context.Medicos
+            .Order()
+            .ToListAsync();
+
         return _mapper.Map<IEnumerable<MedicoResponseDto>>(medicos);
     }
 
@@ -39,8 +42,8 @@ public class MedicoService(ApplicationDbContext context, IMapper mapper)
     public async Task<MedicoResponseDto> AtualizarMedicoAsync(int id, MedicoRequestDto medicoRequestDto)
     {
         var medicoExistente = await _context.Medicos.FindAsync(id) ?? throw new KeyNotFoundException("Médico não encontrado.");
-        _mapper.Map(medicoRequestDto, medicoExistente);
 
+        _mapper.Map(medicoRequestDto, medicoExistente);
         await _context.SaveChangesAsync();
 
         var medicoResponseDto = _mapper.Map<MedicoResponseDto>(medicoExistente);
@@ -51,6 +54,7 @@ public class MedicoService(ApplicationDbContext context, IMapper mapper)
     public async Task RemoverMedicoAsync(int id)
     {
         var medico = await _context.Medicos.FindAsync(id) ?? throw new KeyNotFoundException("Médico não encontrado.");
+
         _context.Medicos.Remove(medico);
         await _context.SaveChangesAsync();
     }

@@ -6,14 +6,9 @@ namespace MedAgenda.Controllers;
 
 [ApiController]
 [Route("api/consultas")]
-public class ConsultasController : ControllerBase
+public class ConsultasController(ConsultaService consultaService) : ControllerBase
 {
-    private readonly ConsultaService _consultaService;
-
-    public ConsultasController(ConsultaService consultaService)
-    {
-        _consultaService = consultaService;
-    }
+    private readonly ConsultaService _consultaService = consultaService;
 
     [HttpGet]
     public async Task<IActionResult> ObterTodas()

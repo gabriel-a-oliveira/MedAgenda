@@ -15,7 +15,8 @@ public class ConsultaService(ApplicationDbContext context, IMapper mapper)
     {
         var consultas = await _context.Consultas
                .Include(c => c.Medico) 
-               .Include(c => c.Paciente) 
+               .Include(c => c.Paciente)
+               .Order()
                .ToListAsync();
 
         return _mapper.Map<IEnumerable<ConsultaResponseDto>>(consultas);
@@ -37,9 +38,7 @@ public class ConsultaService(ApplicationDbContext context, IMapper mapper)
         var pacienteExistente = await _context.Pacientes.FindAsync(consultaRequestDto.PacienteId);
 
         if (medicoExistente is null || pacienteExistente is null)
-        {
             throw new KeyNotFoundException("Médico ou paciente não encontrado.");
-        }
 
         var consulta = _mapper.Map<Consulta>(consultaRequestDto);
 
@@ -53,18 +52,20 @@ public class ConsultaService(ApplicationDbContext context, IMapper mapper)
     public async Task<ConsultaResponseDto> AtualizarConsultaAsync(int id, ConsultaRequestDto consultaRequestDto)
     {
         var consultaExistente = await _context.Consultas.FindAsync(id) ?? throw new KeyNotFoundException("Consulta não encontrada.");
+     
         _mapper.Map(consultaRequestDto, consultaExistente);
 
         await _context.SaveChangesAsync();
 
         var consultaResponseDto = _mapper.Map<ConsultaResponseDto>(consultaExistente);
+        
         return consultaResponseDto;
-
     }
 
     public async Task RemoverConsultaAsync(int id)
     {
         var consulta = await _context.Consultas.FindAsync(id) ?? throw new KeyNotFoundException("Consulta não encontradoa");
+        
         _context.Consultas.Remove(consulta);
         await _context.SaveChangesAsync();
     }

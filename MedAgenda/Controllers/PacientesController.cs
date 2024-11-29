@@ -6,14 +6,9 @@ namespace MedAgenda.Controllers;
 
 [ApiController]
 [Route("api/pacientes")]
-public class PacientesController : ControllerBase
+public class PacientesController(PacienteService pacienteService) : ControllerBase
 {
-    private readonly PacienteService _pacienteService;
-
-    public PacientesController(PacienteService pacienteService)
-    {
-        _pacienteService = pacienteService;
-    }
+    private readonly PacienteService _pacienteService = pacienteService;
 
     [HttpGet]
     public async Task<IActionResult> ObterTodos()
@@ -39,8 +34,8 @@ public class PacientesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> AtualizarPaciente(int id, [FromBody] PacienteRequestDto pacienteRequestDto)
     {
-        await _pacienteService.AtualizarPacienteAsync(id, pacienteRequestDto);
-        return NoContent(); 
+        var pacienteAtualizado = await _pacienteService.AtualizarPacienteAsync(id, pacienteRequestDto);
+        return Ok(pacienteAtualizado); 
     }
 
     [HttpDelete("{id}")]
