@@ -1,6 +1,7 @@
 ﻿using MedAgenda.DTOs;
 using MedAgenda.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace MedAgenda.Controllers;
 

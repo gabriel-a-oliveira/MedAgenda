@@ -1,4 +1,6 @@
-﻿namespace MedAgenda.ExceptionMiddleware;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MedAgenda.ExceptionMiddleware;
 
 public class ExceptionMiddleware(RequestDelegate next)
 {
@@ -23,14 +25,14 @@ public class ExceptionMiddleware(RequestDelegate next)
         var statusCode = exception switch
         {
             KeyNotFoundException => StatusCodes.Status404NotFound,
-            ArgumentException => StatusCodes.Status400BadRequest,
+            ValidationException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
 
         var mensagem = statusCode switch
         {
             StatusCodes.Status404NotFound => "O recurso solicitado não foi encontrado.",
-            StatusCodes.Status400BadRequest => "A requisição está mal formulada. Verifique os dados enviados.",
+            StatusCodes.Status400BadRequest => "Existem erros de validação nos dados enviados.",
             _ => "Ocorreu um erro inesperado no servidor."
         };
 
